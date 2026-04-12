@@ -11,7 +11,6 @@ add_executable(monitor
     src/main.cpp
     src/stat.cpp
     src/ui_ncurses.cpp
-    src/uptime.cpp
     src/mem.cpp
 )
 
