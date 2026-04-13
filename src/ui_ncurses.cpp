@@ -90,12 +90,13 @@ void NCursesDisplay::DisplaySystemsPage()
             mvwprintw(leftWin, i + 2, (leftWinWidth / 2) - (60 / 2), "Core %d:    ", i);
             DisplayCPUGraph(leftWin, corePercentageTotal, core, i + 2, (leftWinWidth / 2) - (60 / 2) + 10, 40);
         }
-        DisplayMemoryGraph(leftWin, memStats, 19, (leftWinWidth / 2) - (64 / 2), 40);
+        DisplayMemoryGraph(leftWin, memStats, 19, (leftWinWidth / 2) - (60 / 2), 40);
+        DisplaySwapGraph(leftWin, memStats, 20, (leftWinWidth / 2) - (60 / 2), 40);
 
         float totalPercentage = stats.getTotalCore().getCpuUsagePercent();
         int totalBarCol = (rightWinWidth / 2) - (50 / 2) - 9;
         mvwprintw(rightWin, 1, totalBarCol, "CPU Usage: ");
-        // Print Cpu bar above shistory graph
+        // Print Cpu bar above history graph
         DisplayCPUGraph(rightWin, totalPercentage, stats.getTotalCore(), 1, totalBarCol + 11, 50);
         DisplayCPUHistoryGraph(rightWin, counter, totalPercentage, rightWinWidth, 2);
 
@@ -116,38 +117,7 @@ void NCursesDisplay::DisplayMemoryGraph(WINDOW *win, MemoryParser &memStats, int
     int shared = (memStats.getShmem() / (double)totalMem) * width;
     int usedmem = ((totalUsedMem - shared - cache - buffers) / (double)totalMem) * width;
 
-    mvwprintw(win, row, col, "Mem[");
-
-    wattron(win, COLOR_PAIR(1));
-    wprintw(win, "%s", std::string(usedmem, '|').c_str());
-    wattroff(win, COLOR_PAIR(1));
-
-    wattron(win, COLOR_PAIR(6));
-    wprintw(win, "%s", std::string(buffers, '|').c_str());
-    wattroff(win, COLOR_PAIR(6));
-
-    wattron(win, COLOR_PAIR(3));
-    wprintw(win, "%s", std::string(cache, '|').c_str());
-    wattroff(win, COLOR_PAIR(3));
-
-    wattron(win, COLOR_PAIR(4));
-    wprintw(win, "%s", std::string(shared, '|').c_str());
-    wattroff(win, COLOR_PAIR(4));
-
-    mvwprintw(win, row, col + width + 5, "]  %.01fG/%.01fG", totalUsedMem * .000001, totalMem * .000001);
-}
-
-void NCursesDisplay::DisplaySwapGraph(WINDOW *win, MemoryParser &memStats, int row, int col, int width)
-{
-    long totalMem = memStats.getMemTotal();
-    long totalUsedMem = memStats.getMemUsed();
-
-    int buffers = (memStats.getBuffers() / (double)totalMem) * width;
-    int cache = ((memStats.getCached() + memStats.getSReclaimable() / (double)totalMem) * width);
-    int shared = (memStats.getShmem() / (double)totalMem) * width;
-    int usedmem = ((totalUsedMem - shared - cache - buffers) / (double)totalMem) * width;
-
-    mvwprintw(win, row, col, "Mem[");
+    mvwprintw(win, row, col, "Mem:  [");
 
     wattron(win, COLOR_PAIR(1));
     wprintw(win, "%s", std::string(usedmem, '|').c_str());
@@ -166,6 +136,25 @@ void NCursesDisplay::DisplaySwapGraph(WINDOW *win, MemoryParser &memStats, int r
     wattroff(win, COLOR_PAIR(4));
 
     mvwprintw(win, row, col + width + 9, "]  %.01fG/%.01fG", totalUsedMem * .000001, totalMem * .000001);
+}
+
+void NCursesDisplay::DisplaySwapGraph(WINDOW *win, MemoryParser &memStats, int row, int col, int width)
+{
+    long swapTotal = memStats.getSwapTotal();
+    long swapUsed = memStats.getSwapUsed();
+
+    int swapBar = 0;
+    if (swapTotal != 0)
+        swapBar = (swapUsed / (double)swapTotal) * width;
+
+    mvwprintw(win, row, col, "Swp:  [");
+
+    wattron(win, COLOR_PAIR(1));
+    wprintw(win, "%s", std::string(swapBar, '|').c_str());
+    wattroff(win, COLOR_PAIR(1));
+
+    mvwprintw(win, row, col + width + 9, "]  %.01fG/%.01fG",
+              swapUsed * .000001, swapTotal * .000001);
 }
 
 void NCursesDisplay::DisplayCPUGraph(WINDOW *win, float percentage, CoreCalculator corestats, int row, int col, int width)
