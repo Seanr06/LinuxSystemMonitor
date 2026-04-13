@@ -1,6 +1,6 @@
 # Linux System Monitor 
 - A system monitor in C++ that parses files from /proc and displays CPU and memory statistics using a ncurses-based interface.
-<img width="1394" height="789" alt="image" src="https://github.com/user-attachments/assets/8d4aa46d-87c5-48ef-99a0-7bdfd45e4ee3" />
+<img width="1377" height="787" alt="image" src="https://github.com/user-attachments/assets/2f9fab61-cecd-4927-bbb0-6eac576f94e9" />
 ## Features
 - Parses /proc/stat and /proc/meminfo to display CPU per-core usage along with a total CPU usage bar and history graph that updates continuously in the terminal.
 - Displays memory usage and swap statistics bars in the terminal.
