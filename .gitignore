@@ -16,3 +16,9 @@ Makefile
 *.a
 *.so
 *.exe
+
+#VSCode
+.vscode
+
+#include
+local/include/httplib.h
